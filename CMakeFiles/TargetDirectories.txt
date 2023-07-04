@@ -1,0 +1,7 @@
+/home/hoswoo/Desktop/Programming/c++/ncurses-test/type-racer/CMakeFiles/app.dir
+/home/hoswoo/Desktop/Programming/c++/ncurses-test/type-racer/CMakeFiles/edit_cache.dir
+/home/hoswoo/Desktop/Programming/c++/ncurses-test/type-racer/CMakeFiles/rebuild_cache.dir
+/home/hoswoo/Desktop/Programming/c++/ncurses-test/type-racer/CMakeFiles/list_install_components.dir
+/home/hoswoo/Desktop/Programming/c++/ncurses-test/type-racer/CMakeFiles/install.dir
+/home/hoswoo/Desktop/Programming/c++/ncurses-test/type-racer/CMakeFiles/install/local.dir
+/home/hoswoo/Desktop/Programming/c++/ncurses-test/type-racer/CMakeFiles/install/strip.dir

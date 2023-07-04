@@ -1,0 +1,23 @@
+[
+ {
+  "directory": "/home/hoswoo/Desktop/Programming/c++/ncurses-test",
+  "arguments": [
+   "/usr/bin/c++",
+   "-I/home/hoswoo/Desktop/Programming/c++/ncurses-test/./src",
+   "-Wall",
+   "-Wextra",
+   "-pedantic",
+   "-std=c++14",
+   "-MD",
+   "-MT",
+   "CMakeFiles/app.dir/src/hello.cc.o",
+   "-MF",
+   "CMakeFiles/app.dir/src/hello.cc.o.d",
+   "-o",
+   "CMakeFiles/app.dir/src/hello.cc.o",
+   "-c",
+   "/home/hoswoo/Desktop/Programming/c++/ncurses-test/src/hello.cc"
+  ],
+  "file": "/home/hoswoo/Desktop/Programming/c++/ncurses-test/src/hello.cc"
+ }
+]
