@@ -1,11 +1,11 @@
 cmake_minimum_required(VERSION 3.2)
-project(app)
+project(type-racer)
 
 # Use our modified FindSDL2* modules
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${app_SOURCE_DIR}/cmake")
-set(BIN_DIR ${app_SOURCE_DIR}/bin)
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${type-racer_SOURCE_DIR}/cmake")
+set(BIN_DIR ${type-racer_SOURCE_DIR}/bin)
 
-# Bump up warning levels appropriately for clang, gcc & msvc and build in debug mode
+# Bump up warning levels type-racerropriately for clang, gcc & msvc and build in debug mode
 if (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU" OR ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -pedantic -std=c++14")
 	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS} -g")
@@ -22,8 +22,8 @@ find_package(Curses REQUIRED)
 include_directories(${CURSES_INCLUDE_DIR})
 
 include_directories("./src")
-file (GLOB app_SOURCES src/*.cc)
+file (GLOB type-racer_SOURCES src/*.cc)
 
-add_executable(app ${app_SOURCES})
-target_link_libraries(app ${CURSES_LIBRARY})
-install(TARGETS app RUNTIME DESTINATION ${BIN_DIR})
+add_executable(type-racer ${type-racer_SOURCES})
+target_link_libraries(type-racer ${CURSES_LIBRARY})
+install(TARGETS type-racer RUNTIME DESTINATION ${BIN_DIR})

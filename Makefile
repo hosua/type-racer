@@ -162,24 +162,24 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named app
+# Target rules for targets named type-racer
 
 # Build rule for target.
-app: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 app
-.PHONY : app
+type-racer: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 type-racer
+.PHONY : type-racer
 
 # fast build rule for target.
-app/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/app.dir/build.make CMakeFiles/app.dir/build
-.PHONY : app/fast
+type-racer/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/type-racer.dir/build.make CMakeFiles/type-racer.dir/build
+.PHONY : type-racer/fast
 
 src/main.o: src/main.cc.o
 .PHONY : src/main.o
 
 # target to build an object file
 src/main.cc.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/app.dir/build.make CMakeFiles/app.dir/src/main.cc.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/type-racer.dir/build.make CMakeFiles/type-racer.dir/src/main.cc.o
 .PHONY : src/main.cc.o
 
 src/main.i: src/main.cc.i
@@ -187,7 +187,7 @@ src/main.i: src/main.cc.i
 
 # target to preprocess a source file
 src/main.cc.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/app.dir/build.make CMakeFiles/app.dir/src/main.cc.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/type-racer.dir/build.make CMakeFiles/type-racer.dir/src/main.cc.i
 .PHONY : src/main.cc.i
 
 src/main.s: src/main.cc.s
@@ -195,7 +195,7 @@ src/main.s: src/main.cc.s
 
 # target to generate assembly for a file
 src/main.cc.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/app.dir/build.make CMakeFiles/app.dir/src/main.cc.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/type-racer.dir/build.make CMakeFiles/type-racer.dir/src/main.cc.s
 .PHONY : src/main.cc.s
 
 src/type_racer.o: src/type_racer.cc.o
@@ -203,7 +203,7 @@ src/type_racer.o: src/type_racer.cc.o
 
 # target to build an object file
 src/type_racer.cc.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/app.dir/build.make CMakeFiles/app.dir/src/type_racer.cc.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/type-racer.dir/build.make CMakeFiles/type-racer.dir/src/type_racer.cc.o
 .PHONY : src/type_racer.cc.o
 
 src/type_racer.i: src/type_racer.cc.i
@@ -211,7 +211,7 @@ src/type_racer.i: src/type_racer.cc.i
 
 # target to preprocess a source file
 src/type_racer.cc.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/app.dir/build.make CMakeFiles/app.dir/src/type_racer.cc.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/type-racer.dir/build.make CMakeFiles/type-racer.dir/src/type_racer.cc.i
 .PHONY : src/type_racer.cc.i
 
 src/type_racer.s: src/type_racer.cc.s
@@ -219,7 +219,7 @@ src/type_racer.s: src/type_racer.cc.s
 
 # target to generate assembly for a file
 src/type_racer.cc.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/app.dir/build.make CMakeFiles/app.dir/src/type_racer.cc.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/type-racer.dir/build.make CMakeFiles/type-racer.dir/src/type_racer.cc.s
 .PHONY : src/type_racer.cc.s
 
 # Help Target
@@ -234,7 +234,7 @@ help:
 	@echo "... install/strip"
 	@echo "... list_install_components"
 	@echo "... rebuild_cache"
-	@echo "... app"
+	@echo "... type-racer"
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"
