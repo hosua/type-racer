@@ -13,6 +13,15 @@ namespace Clock {
 	bool terminated = false;
 
 	int hh, mm, ss, ms;
+	
+	// returns minutes elapsed since timer started
+	double get_time_elapsed(){ 
+		end_time = std::chrono::system_clock::now();
+		std::chrono::duration<long, std::ratio<1, 1000>> delta = 
+			std::chrono::duration_cast<std::chrono::milliseconds>(end_time-start_time);
+		return duration_cast<minutes>(delta).count();
+	}
+
 	void timer_start(){
 		terminated = hh = mm = ss = ms = 0;
 		// Initialize the start time so we have a frame of reference
@@ -32,7 +41,8 @@ namespace Clock {
 	void timer_tick(){
 		while (!terminated){
 			end_time = std::chrono::system_clock::now();
-			std::chrono::duration<long, std::ratio<1, 1000>> delta = std::chrono::duration_cast<std::chrono::milliseconds>(end_time-start_time);
+			std::chrono::duration<long, std::ratio<1, 1000>> delta = 
+				std::chrono::duration_cast<std::chrono::milliseconds>(end_time-start_time);
 
 			hh = duration_cast<hours>(delta).count();
 			mm = duration_cast<minutes>(delta).count() - (hh*60);
@@ -67,7 +77,7 @@ namespace TypeRacer {
 	int hits = 0;
 
 	int total_words = 0;
-	int wpm = 0;
+	double wpm = 0;
 
 	Status status = NONE;
 
@@ -82,12 +92,10 @@ namespace TypeRacer {
 										 	 // before the user hits any keys.
 	}
 
-	void open_words_file(){
-		ifs.open(DICT_FILE);
-	}
-
-	void close_words_file(){
-		ifs.close();
+	double calc_wpm(){
+		double total_mins = Clock::get_time_elapsed();
+		wpm = (double)total_words/total_mins;
+		return wpm;
 	}
 
 	int get_words_line_count(){
@@ -129,7 +137,7 @@ namespace TypeRacer {
 		total_chars++;
 		char ch = sentence_vec[0][i];
 		if (input == ch){
-			if (ch == ' ' || ch == '\n')
+			if (isspace(ch))
 				TypeRacer::total_words += 1;
 			hits++;
 			i++;

@@ -31,7 +31,7 @@ extern size_t DICT_SIZE; // Total # of lines/words in DICT_FILE
 #define WIN_X 2
 #define WIN_Y 2
 // Text positional offset
-#define WIN_TEXT_OFFSET_Y 1
+#define WIN_TEXT_OFFSET_Y 4
 #define WIN_TEXT_OFFSET_X 2
 // Statistics tracker offset
 #define STATS_TEXT_OFFSET_Y WIN_TEXT_OFFSET_Y+VEC_SIZE+4
@@ -45,6 +45,8 @@ extern size_t DICT_SIZE; // Total # of lines/words in DICT_FILE
 
 namespace Clock {
 	extern int hh, mm, ss;
+	double get_time_elapsed();
+
 	void timer_start();
 	void timer_end();
 	void timer_restart();
@@ -75,14 +77,15 @@ namespace TypeRacer {
 	// count # words
 	extern int total_words;
 	// words per min
-	extern int wpm;
+	extern double wpm;
 	
 	extern Status status;
+
+	extern bool terminated;
 	
 	void init();
+	double calc_wpm();
 	int get_words_line_count();
-	void open_words_file();
-	void close_words_file();
 
 	// void gen_rand_word();
 	void gen_rand_sentence();

@@ -50,9 +50,10 @@ void print_stats(WINDOW* w){
 	float p = ((float)TypeRacer::hits / (float)TypeRacer::total_chars) * 100;
 	mvwprintw(w, STATS_TEXT_OFFSET_Y, WIN_TEXT_OFFSET_X, "Accuracy: %0.2f%%", p);
 	// print total key hits/misses
-	mvwprintw(w, STATS_TEXT_OFFSET_Y+1, WIN_TEXT_OFFSET_X, "Hits: %i\tMisses: %i", TypeRacer::total_chars, TypeRacer::total_chars-TypeRacer::hits);
+	mvwprintw(w, STATS_TEXT_OFFSET_Y+1, WIN_TEXT_OFFSET_X, 
+			"Hits: %i\tMisses: %i\tTotal keystrokes:", TypeRacer::hits, TypeRacer::total_chars-TypeRacer::hits, TypeRacer::total_chars);
 	// print WPM and total words typed
-	mvwprintw(w, STATS_TEXT_OFFSET_Y+2, WIN_TEXT_OFFSET_X, "WPM: %i\tWords typed: %i", TypeRacer::wpm, TypeRacer::total_words);
+	mvwprintw(w, STATS_TEXT_OFFSET_Y+2, WIN_TEXT_OFFSET_X, "WPM: %f\tWords typed: %i", TypeRacer::wpm, TypeRacer::total_words);
 }
 
 // Add ability to restart timer/game with some keybindings
@@ -83,7 +84,7 @@ int main() {
 	curs_set(0); // hide the default screen cursor.
 	
 	// Print TUI elements for the first frame
-	mvwprintw(w, TITLE_Y, TITLE_X, "Type Racer"); 
+	mvwprintw(w, TITLE_Y, TITLE_X, " Type Racer "); 
 	print_stats(w);
 
 	ColorPair col_pair = CP_BLACK; // By default, the color pair will be black since the player is
@@ -92,8 +93,6 @@ int main() {
 	// Initialize hours, mins, and seconds to 0 and set the clock's internal 
 	// timer to the time this function gets called. 
 	Clock::timer_start(); 
-
-	// std::thread timer_thread(&Clock::timer_tick);
 	
 	// These variables are used for printing a single char in a string, a different color.
 	// TODO: Instead of how we only have the current key as the colored key, we should reimplement
@@ -127,15 +126,11 @@ int main() {
 
 	int input;
 	std::thread tick_thr(&Clock::timer_tick);
-
+	
+	// Disable blocking-mode in wgetch for window w
 	nodelay(w, TRUE);
 	// while (true){
 	while ( (input = wgetch(w)) != KEY_ESC ) {
-		// input = getch();
-		// refresh();
-		// erase();
-		// input = getch();
-		// Clock::print_timer(w);
 		TypeRacer::validate_input(input);
 		switch (TypeRacer::status){
 			case TypeRacer::NONE:
@@ -191,16 +186,18 @@ int main() {
 		}
 		print_stats(w);
 		Clock::print_timer(w);
+		TypeRacer::calc_wpm();
 		// Debugging 
 		// mvwprintw(w, 14, WIN_TEXT_OFFSET_X, "dict_size: %zu", DICT_SIZE);
 		// mvwprintw(w, 15, WIN_TEXT_OFFSET_X, "%c(%i) %zu", TypeRacer::sentence_vec[0][TypeRacer::i], TypeRacer::i, TypeRacer::sentence_vec[0].length());
 		// mvwprintw(w, 16, WIN_TEXT_OFFSET_X, "col_pair: %i", col_pair);
 	}
+	// Detach thread before exiting
+	tick_thr.detach();
 	delwin(w);
 	endwin();
 
 	TypeRacer::ifs.close();
-	TypeRacer::close_words_file();
 	return 0;
 }
 
