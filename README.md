@@ -1,6 +1,8 @@
 # Type-racer
 
-A type-racer clone, written in C++ using the ncurses library.
+Something to practice typing, written in C++ using the ncurses library.
+
+![type-racer](img/type-racer.gif)
 
 # Word List Sources
 
@@ -8,5 +10,6 @@ A type-racer clone, written in C++ using the ncurses library.
 
 [Medium](http://www.gwicks.net/dictionaries.htm)
 
-[Hard](https://github.com/jeremy-rifkin/Wordlist).
+[Hard](https://github.com/jeremy-rifkin/Wordlist)
+
 

@@ -2,6 +2,7 @@
 #define TYPE_RACER_HH
 
 #include <algorithm>
+#include <cmath>
 #include <chrono>
 #include <cstdlib>  
 #include <ctime>    
@@ -43,6 +44,15 @@ extern size_t DICT_SIZE; // Total # of lines/words in DICT_FILE
 
 #define KEY_ESC 27
 
+#define DEBUG_OFFSET_Y STATS_TEXT_OFFSET_Y+5
+
+typedef enum ColorPair {
+	CP_WHITEBLACK = 1,
+	CP_GREENBLACK = 2,
+	CP_REDBLACK = 3,
+	CP_BLACKGREEN = 4,
+} ColorPair;
+
 namespace Clock {
 	extern int hh, mm, ss;
 	double get_time_elapsed();
@@ -53,7 +63,6 @@ namespace Clock {
 	void timer_tick();
 
 	void print_timer(WINDOW* w);
-	void print_clock(WINDOW* w);
 }
 
 namespace TypeRacer {
@@ -68,7 +77,7 @@ namespace TypeRacer {
 	extern std::vector<std::string> sentence_vec;
 	extern std::string sentence;
 	extern std::string word;
-	extern int i;
+	extern int cursor;
 	
 	// count characters
 	extern int total_chars;

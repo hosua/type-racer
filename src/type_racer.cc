@@ -5,6 +5,7 @@
 
 size_t DICT_SIZE = 0;
 
+// Timing logic is handled in Clock
 namespace Clock {
 	using namespace std::chrono;
 
@@ -13,13 +14,14 @@ namespace Clock {
 	bool terminated = false;
 
 	int hh, mm, ss, ms;
-	
-	// returns minutes elapsed since timer started
+
+	// returns seconds elapsed since timer started
 	double get_time_elapsed(){ 
 		end_time = std::chrono::system_clock::now();
 		std::chrono::duration<long, std::ratio<1, 1000>> delta = 
 			std::chrono::duration_cast<std::chrono::milliseconds>(end_time-start_time);
-		return duration_cast<minutes>(delta).count();
+		return duration_cast<seconds>(delta).count();
+		// return delta.count();
 	}
 
 	void timer_start(){
@@ -54,16 +56,15 @@ namespace Clock {
 	}
 
 	void print_timer(WINDOW* w){
-		mvwprintw(w, CLOCK_TEXT_OFFSET_Y+2, WIN_TEXT_OFFSET_X, "Timer: %02i:%02i:%02i:%03i", Clock::hh, Clock::mm, Clock::ss, Clock::ms);
-	}
-
-	// TODO: implement clock
-	void print_clock(WINDOW* w){
+		mvwprintw(w, CLOCK_TEXT_OFFSET_Y+2, WIN_TEXT_OFFSET_X, 
+				"Timer: %02i:%02i:%02i:%03i", Clock::hh, Clock::mm, Clock::ss, Clock::ms);
 	}
 }
 
+
+// General game logic goes in this namespace
 namespace TypeRacer {
-	int i = 0;
+	int cursor = 0;
 
 	std::vector<std::string> sentence_vec;
 	std::string sentence;
@@ -86,15 +87,23 @@ namespace TypeRacer {
 		// and store it in the TypeRacer namespace
 		TypeRacer::get_words_line_count(); 
 		TypeRacer::ifs.open(DICT_FILE); // Open our dictionary text file to generate random words
-	
-		TypeRacer::i = 0;
+		TypeRacer::cursor = 0;
 		TypeRacer::status = TypeRacer::NONE; // TypeRacer should initially be in a neutral state, 
-										 	 // before the user hits any keys.
+											 // before the user hits any keys.
 	}
 
-	double calc_wpm(){
-		double total_mins = Clock::get_time_elapsed();
-		wpm = (double)total_words/total_mins;
+	// Calculate the words per minute in a separate thread
+	double calc_wpm(){ 
+		// double secs = Clock::get_time_elapsed();
+		// wpm = (double)total_words/(double)(secs/60);
+		while (!terminated){
+			int secs = Clock::get_time_elapsed();
+			wpm = (double)total_words/((double)secs/60);
+			if (std::isnan(wpm) || std::isnan(-wpm)
+					|| std::isinf(wpm) || std::isinf(-wpm))
+				wpm = 0;
+			std::this_thread::sleep_for(std::chrono::milliseconds(200));
+		}
 		return wpm;
 	}
 
@@ -111,12 +120,12 @@ namespace TypeRacer {
 
 	// Helper for gen_rand_word()
 	void gen_rand_word(){
-		i = 0;
+		cursor = 0;
 		int n = rand() % DICT_SIZE;
 		// Move file pointer to start
 		ifs.seekg(std::ios::beg);
 		// Go to nth line
-		for (int i = 0; i < n; i++)
+		for (int cursor = 0; cursor < n; cursor++)
 			ifs.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 		// Store nth line to word
 		ifs >> word;
@@ -128,23 +137,24 @@ namespace TypeRacer {
 			gen_rand_word();
 			sentence += word + " ";
 		}
-		i = 0;
+		sentence += " ";
+		cursor = 0;
 	}
 
 	void validate_input(int input){
 		if (input == ERR)
 			return;
 		total_chars++;
-		char ch = sentence_vec[0][i];
+		char ch = sentence_vec[0][cursor];
 		if (input == ch){
 			if (isspace(ch))
 				TypeRacer::total_words += 1;
 			hits++;
-			i++;
 			status = HIT;
 		} else {
 			status = MISS;
 		}
+		cursor++;
 	}
 
 	void replace_sentence(){

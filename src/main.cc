@@ -1,14 +1,11 @@
 #include "type_racer.hh"
-// using namespace TypeRacer;
+// using namespace tr;
 
-typedef enum ColorPair {
-	CP_BLACK = 1,
-	CP_GREEN = 2,
-	CP_RED = 3,
-} ColorPair;
+namespace tr = TypeRacer;
 
 void init_color_pairs();
 void print_stats(WINDOW* w);
+void print_debug_vars(WINDOW* w);
 
 // prints a string to ncurses with a color at the specific index i
 // at position (x,y) in window w.
@@ -24,9 +21,11 @@ void print_word_colored_at_i(WINDOW* w,
 
 void init_color_pairs(){
 	start_color(); // must be called before initializing colors
-	init_pair(CP_BLACK, COLOR_WHITE, COLOR_BLACK);
-	init_pair(CP_GREEN, COLOR_WHITE, COLOR_GREEN);
-	init_pair(CP_RED, COLOR_WHITE, COLOR_RED);
+	//		  symbol		 FG			  BG
+	init_pair(CP_WHITEBLACK, COLOR_WHITE, COLOR_BLACK);
+	init_pair(CP_GREENBLACK, COLOR_GREEN, COLOR_BLACK);
+	init_pair(CP_REDBLACK,   COLOR_RED,   COLOR_BLACK);
+	init_pair(CP_BLACKGREEN, COLOR_BLACK, COLOR_GREEN);
 }
 
 void print_word_colored_at_i(WINDOW* w, 
@@ -41,19 +40,45 @@ void print_word_colored_at_i(WINDOW* w,
 	rhs = strdup(str.substr(i+1).c_str());
 	wprintw(w, "%s", lhs);
 	wattron(w, COLOR_PAIR(col_pair));
+	if (mid == ' ')
+		wattron(w, COLOR_PAIR(CP_BLACKGREEN));
 	wprintw(w, "%c", mid);
-	wattron(w, COLOR_PAIR(CP_BLACK));
+	wattron(w, COLOR_PAIR(CP_WHITEBLACK));
 	wprintw(w, "%s", rhs);
 }
 
 void print_stats(WINDOW* w){
-	float p = ((float)TypeRacer::hits / (float)TypeRacer::total_chars) * 100;
-	mvwprintw(w, STATS_TEXT_OFFSET_Y, WIN_TEXT_OFFSET_X, "Accuracy: %0.2f%%", p);
+	if (tr::total_chars > 0){
+		float acc = ((float)tr::hits / (float)tr::total_chars) * 100;
+		mvwprintw(w, STATS_TEXT_OFFSET_Y, WIN_TEXT_OFFSET_X, "Accuracy: %0.2f%%", acc);
+	} else {
+		mvwprintw(w, STATS_TEXT_OFFSET_Y, WIN_TEXT_OFFSET_X, "Accuracy: %0.2f%%", 0.0);
+	}
+
 	// print total key hits/misses
 	mvwprintw(w, STATS_TEXT_OFFSET_Y+1, WIN_TEXT_OFFSET_X, 
-			"Hits: %i\tMisses: %i\tTotal keystrokes:", TypeRacer::hits, TypeRacer::total_chars-TypeRacer::hits, TypeRacer::total_chars);
+			"Hits: %i\tMisses: %i\tTotal keystrokes: %i", tr::hits, tr::total_chars-tr::hits, tr::total_chars);
 	// print WPM and total words typed
-	mvwprintw(w, STATS_TEXT_OFFSET_Y+2, WIN_TEXT_OFFSET_X, "WPM: %f\tWords typed: %i", TypeRacer::wpm, TypeRacer::total_words);
+	mvwprintw(w, STATS_TEXT_OFFSET_Y+2, WIN_TEXT_OFFSET_X, "WPM: %f\tWords: %i", tr::wpm, tr::total_words);
+}
+
+void clear_stats(WINDOW* w){
+	for (int y = STATS_TEXT_OFFSET_Y; y < STATS_TEXT_OFFSET_Y+4; y++){
+		wmove(w, y, 0); 
+		wclrtoeol(w);
+	}
+}
+
+void print_debug_vars(WINDOW* w){
+	mvwprintw(w, DEBUG_OFFSET_Y, WIN_TEXT_OFFSET_X, "Debug variables");
+	int secs = Clock::get_time_elapsed();
+	// wpm = (double)total_words/((double)mins);
+	mvwprintw(w, DEBUG_OFFSET_Y+1, WIN_TEXT_OFFSET_X, "secs: %i", secs);
+	mvwprintw(w, DEBUG_OFFSET_Y+2, WIN_TEXT_OFFSET_X, "total_words: %i", tr::total_words);
+
+	// mvwprintw(w, DEBUG_OFFSET_Y+1, WIN_TEXT_OFFSET_X, "dict_size: %zu", DICT_SIZE);
+	// mvwprintw(w, DEBUG_OFFSET_Y+2, WIN_TEXT_OFFSET_X, "%c(%i) %zu", tr::sentence_vec[0][tr::cursor], tr::cursor, tr::sentence_vec[0].length());
+	// mvwprintw(w, DEBUG_OFFSET_Y+3, WIN_TEXT_OFFSET_X, "col_pair: %i", col_pair);
 }
 
 // Add ability to restart timer/game with some keybindings
@@ -79,15 +104,15 @@ int main() {
 	// this sets the delay to 100ms
 	set_escdelay(100); 
 
-	TypeRacer::init();
+	tr::init();
 
 	curs_set(0); // hide the default screen cursor.
 	
 	// Print TUI elements for the first frame
 	mvwprintw(w, TITLE_Y, TITLE_X, " Type Racer "); 
-	print_stats(w);
+	// print_stats(w);
 
-	ColorPair col_pair = CP_BLACK; // By default, the color pair will be black since the player is
+	ColorPair col_pair = CP_WHITEBLACK; // By default, the color pair will be black since the player is
 								   // not doing anything yet.
 	
 	// Initialize hours, mins, and seconds to 0 and set the clock's internal 
@@ -104,43 +129,36 @@ int main() {
 	
 	// populate sentence vector with VEC_SIZE elements
 	for (int i = 0; i < VEC_SIZE; i++){
-		TypeRacer::gen_rand_sentence();
-		TypeRacer::sentence_vec.push_back(TypeRacer::sentence);
+		tr::gen_rand_sentence();
+		tr::sentence_vec.push_back(tr::sentence);
 	}
 
-	// print first sentence with colored cursor at the beginning
-	print_word_colored_at_i(w, WIN_TEXT_OFFSET_X, WIN_TEXT_OFFSET_Y, 
-			lhs, rhs,
-			TypeRacer::sentence_vec[0], TypeRacer::i, 
-			col_pair
-		);
 
 	// print the rest of the sentences normally, none need to be colored
-	for (int i = 1; i < VEC_SIZE; i++){
+	for (int i = 0; i < VEC_SIZE; i++){
 		int y = WIN_TEXT_OFFSET_Y + i;
-		char* c_str = (char*)TypeRacer::sentence_vec[i].c_str();
+		char* c_str = (char*)tr::sentence_vec[i].c_str();
 		mvwprintw(w, y, WIN_TEXT_OFFSET_X, "%s", c_str); 
 	}
 
-	// print random word
-
 	int input;
 	std::thread tick_thr(&Clock::timer_tick);
-	
+	std::thread wpm_thr(&tr::calc_wpm);
+		
 	// Disable blocking-mode in wgetch for window w
 	nodelay(w, TRUE);
 	// while (true){
 	while ( (input = wgetch(w)) != KEY_ESC ) {
-		TypeRacer::validate_input(input);
-		switch (TypeRacer::status){
-			case TypeRacer::NONE:
-				col_pair = CP_BLACK;
+		tr::validate_input(input);
+		switch (tr::status){
+			case tr::NONE:
+				col_pair = CP_WHITEBLACK;
 				break;
-			case TypeRacer::HIT:
-				col_pair = CP_GREEN;
+			case tr::HIT:
+				col_pair = CP_GREENBLACK;
 				break;
-			case TypeRacer::MISS:
-				col_pair = CP_RED;
+			case tr::MISS:
+				col_pair = CP_REDBLACK;
 				break;
 		}
 
@@ -150,17 +168,19 @@ int main() {
 		print_word_colored_at_i(w, 
 				WIN_TEXT_OFFSET_X, WIN_TEXT_OFFSET_Y, 
 				lhs, rhs,
-				TypeRacer::sentence_vec[0], TypeRacer::i, 
+				tr::sentence_vec[0], tr::cursor, 
 				col_pair
 			);
-		
-		size_t len = TypeRacer::sentence_vec[0].length();
+		clear_stats(w);	
+		box(w, 0, 0);
+		print_stats(w);
+		size_t len = tr::sentence_vec[0].length();
 
 		// If cursor is at the end of the sentence
-		if (TypeRacer::i == len-1){
-			TypeRacer::total_words++;
-			TypeRacer::replace_sentence();
-			// clear sentences from ncurses
+		if (tr::cursor == len-1){
+			tr::total_words++;
+			tr::replace_sentence();
+			// clear sentences from the screen 
 			for (int y = WIN_TEXT_OFFSET_Y; y <= WIN_TEXT_OFFSET_Y+VEC_SIZE; y++){	
 				wmove(w, y, 0); 
 				wclrtoeol(w);
@@ -173,31 +193,29 @@ int main() {
 			print_word_colored_at_i(w, 
 					WIN_TEXT_OFFSET_X, WIN_TEXT_OFFSET_Y, 
 					lhs, rhs,
-					TypeRacer::sentence_vec[0], TypeRacer::i, 
+					tr::sentence_vec[0], tr::cursor, 
 					col_pair
 				);
 
 			// print the rest of the sentences normally, none need to be colored
 			for (int i = 1; i < VEC_SIZE; i++){
 				int y = WIN_TEXT_OFFSET_Y + i;
-				c_str = (char*)TypeRacer::sentence_vec[i].c_str();
+				c_str = (char*)tr::sentence_vec[i].c_str();
 				mvwprintw(w, y, WIN_TEXT_OFFSET_X, "%s", c_str); 
 			}
 		}
-		print_stats(w);
 		Clock::print_timer(w);
-		TypeRacer::calc_wpm();
-		// Debugging 
-		// mvwprintw(w, 14, WIN_TEXT_OFFSET_X, "dict_size: %zu", DICT_SIZE);
-		// mvwprintw(w, 15, WIN_TEXT_OFFSET_X, "%c(%i) %zu", TypeRacer::sentence_vec[0][TypeRacer::i], TypeRacer::i, TypeRacer::sentence_vec[0].length());
-		// mvwprintw(w, 16, WIN_TEXT_OFFSET_X, "col_pair: %i", col_pair);
+		// print_debug_vars(w);
 	}
-	// Detach thread before exiting
+
+	// Detach threads before exiting
 	tick_thr.detach();
+	wpm_thr.detach();
+
 	delwin(w);
 	endwin();
-
-	TypeRacer::ifs.close();
+	// close dictionary file
+	tr::ifs.close();
 	return 0;
 }
 

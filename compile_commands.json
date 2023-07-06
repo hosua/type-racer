@@ -1,23 +1,44 @@
 [
  {
-  "directory": "/home/hoswoo/Desktop/Programming/c++/ncurses-test",
+  "directory": "/home/hoswoo/Desktop/Programming/c++/ncurses-test/type-racer",
   "arguments": [
    "/usr/bin/c++",
-   "-I/home/hoswoo/Desktop/Programming/c++/ncurses-test/./src",
+   "-I/home/hoswoo/Desktop/Programming/c++/ncurses-test/type-racer/./src",
    "-Wall",
    "-Wextra",
    "-pedantic",
-   "-std=c++14",
+   "-std=c++17",
    "-MD",
    "-MT",
-   "CMakeFiles/app.dir/src/hello.cc.o",
+   "CMakeFiles/type-racer.dir/src/main.cc.o",
    "-MF",
-   "CMakeFiles/app.dir/src/hello.cc.o.d",
+   "CMakeFiles/type-racer.dir/src/main.cc.o.d",
    "-o",
-   "CMakeFiles/app.dir/src/hello.cc.o",
+   "CMakeFiles/type-racer.dir/src/main.cc.o",
    "-c",
-   "/home/hoswoo/Desktop/Programming/c++/ncurses-test/src/hello.cc"
+   "/home/hoswoo/Desktop/Programming/c++/ncurses-test/type-racer/src/main.cc"
   ],
-  "file": "/home/hoswoo/Desktop/Programming/c++/ncurses-test/src/hello.cc"
+  "file": "/home/hoswoo/Desktop/Programming/c++/ncurses-test/type-racer/src/main.cc"
+ },
+ {
+  "directory": "/home/hoswoo/Desktop/Programming/c++/ncurses-test/type-racer",
+  "arguments": [
+   "/usr/bin/c++",
+   "-I/home/hoswoo/Desktop/Programming/c++/ncurses-test/type-racer/./src",
+   "-Wall",
+   "-Wextra",
+   "-pedantic",
+   "-std=c++17",
+   "-MD",
+   "-MT",
+   "CMakeFiles/type-racer.dir/src/type_racer.cc.o",
+   "-MF",
+   "CMakeFiles/type-racer.dir/src/type_racer.cc.o.d",
+   "-o",
+   "CMakeFiles/type-racer.dir/src/type_racer.cc.o",
+   "-c",
+   "/home/hoswoo/Desktop/Programming/c++/ncurses-test/type-racer/src/type_racer.cc"
+  ],
+  "file": "/home/hoswoo/Desktop/Programming/c++/ncurses-test/type-racer/src/type_racer.cc"
  }
 ]
